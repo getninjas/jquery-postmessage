@@ -34,7 +34,7 @@
 // Information about what version or versions of jQuery this plugin has been
 // tested with and what browsers it has been tested in.
 // 
-// jQuery Versions - 1.3.2
+// jQuery Versions - 1.3.2+
 // Browsers Tested - Internet Explorer 6-8, Firefox 3, Safari 3-4, Chrome, Opera 9.
 // 
 // About: Release History
@@ -64,8 +64,8 @@
     p_receiveMessage,
     
     // I couldn't get window.postMessage to actually work in Opera 9.64!
-    has_postMessage = window[postMessage] && !$.browser.opera;
-  
+    has_postMessage = window[postMessage];
+
   // Method: jQuery.postMessage
   // 
   // This method will call window.postMessage if available, setting the
@@ -179,6 +179,12 @@
         // Bind the callback. A reference to the callback is stored for ease of
         // unbinding.
         rm_callback = function(e) {
+          // Opera <10 uses event.domain and doesn't include the http:// prefix
+          if(e.domain) {
+            source_origin = source_origin.split("://")[1];
+            e.origin = e.domain;
+          }
+
           if ( ( typeof source_origin === 'string' && e.origin !== source_origin )
             || ( $.isFunction( source_origin ) && source_origin( e.origin ) === FALSE ) ) {
             return FALSE;
